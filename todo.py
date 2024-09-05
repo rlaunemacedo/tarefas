@@ -14,16 +14,17 @@ class ToDo:
         # self.result = self.exec_sql("SELECT * FROM tasks")
         self.task = ''
         self.view = 'all'
-        self.result = self.lista(self.view)
+        self.result = self.filtra_lista()
 
         self.main_page()
 
-    def lista(self, view):
-        if view == 'all':
+    def filtra_lista(self):
+        print(self.view)
+        if self.view == 'all':
             return self.exec_sql("SELECT * FROM tasks")
-        elif view == 'conpletas':
+        elif self.view == 'completas':
             return self.exec_sql("SELECT * FROM tasks WHERE status='completa'")
-        elif view == 'inconpletas':
+        elif self.view == 'incompletas':
             return self.exec_sql("SELECT * FROM tasks WHERE status='incompleta'")
 
     def exec_sql(self, sql, params=[]):
@@ -45,11 +46,13 @@ class ToDo:
             sql = f'UPDATE tasks SET status = "incompleta" WHERE nome = "{nome}"'
             self.exec_sql(sql)
 
+        self.filtra_lista()
         self.atualiza_lista()
 
     
     def tasks_container(self):
-        self.result = self.exec_sql("SELECT * FROM tasks")
+        self.result = self.filtra_lista()
+        print(self.result)
         return ft.Container(
             height = self.page.height * .8,
             content = ft.Column(
@@ -86,11 +89,14 @@ class ToDo:
     def trocaTab(self, e):
         tab = e.control.selected_index
         if tab == 0:
-            self.result = self.lista('all')
+            self.view = 'all'
         elif tab == 1:
-            self.result = self.lista('completas')
+            self.view = 'incompletas'
         elif tab == 2:
-            self.result = self.lista('incompletas')
+            self.view = 'completas'
+
+        self.result = self.filtra_lista()
+        self.atualiza_lista()
     
     def main_page(self):
         fld_tarefa = ft.TextField(
